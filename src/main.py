@@ -6,6 +6,11 @@ import model
 import loss
 from option import args
 from trainer import Trainer
+from PIL import Image
+import pytesseract
+import argparse
+import cv2
+import os
 
 torch.manual_seed(args.seed)
 checkpoint = utility.checkpoint(args)
@@ -27,3 +32,23 @@ else:
 
         checkpoint.done()
 
+
+for filename in os.listdir("../expirement/test/results-Demo"):
+    if filename.endswith(".jpg") or filename.endswith(".png"):
+
+        image = cv2.imread(filename)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        ret, img = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
+
+        filename = "abc.jpg".format(os.getpid())
+        cv2.imwrite(filename, img)
+        text = pytesseract.image_to_string(
+            Image.open(filename), config='--psm 13')
+
+        os.remove(filename)
+        print(text)
+        # print(os.path.join(directory, filename))
+        continue
+    else:
+        continue
+# img = cv2.resize(image, (1000, 1000))
